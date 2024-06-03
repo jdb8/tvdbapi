@@ -20,8 +20,5 @@
   },
   "scripts": {
     "test": "node test.js"
-  },
-  "dependencies": {
-    "got": "11.8.6"
   }
 }

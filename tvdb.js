@@ -3,7 +3,6 @@
 const defaultUrl = 'https://api4.thetvdb.com/v4'
 const tokenTTL = 28 * 24 * 60 * 60 * 1000 // 28 days
 
-const got = require('got')
 const methods = require('./methods.json')
 
 module.exports = class TVDB {
@@ -22,7 +21,7 @@ module.exports = class TVDB {
     this._construct()
   }
 
-  login(opts = {}) {
+  async login(opts = {}) {
     let auth = {apikey: this._settings.apikey}
 
     if (opts.token && opts.token_expires) {
@@ -46,13 +45,12 @@ module.exports = class TVDB {
     }
     const url = this._settings.endpoint + '/login'
 
-    return got(url, req).then(res => {
-      const body = JSON.parse(res.body)
-      this._authentication.token = body.data.token
-      this._authentication.token_expires = Date.now() + tokenTTL
+    const res = await fetch(url, req);
+    const body = await res.json();
+    this._authentication.token = body.data.token;
+    this._authentication.token_expires = Date.now() + tokenTTL;
 
-      return this._authentication
-    });
+    return this._authentication;
   }
 
   // Creates methods for all requests
@@ -145,7 +143,7 @@ module.exports = class TVDB {
         req.body = JSON.stringify(req.body)
       }
 
-      return got(url, req)
-    }).then(response => JSON.parse(response.body))
+      return fetch(url, req)
+    }).then(response => response.json())
   }
 }
